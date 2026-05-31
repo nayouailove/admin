@@ -1,0 +1,37 @@
+services: #실행할 컨테이너 목록
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db     #db 컨테이너가 먼저 실행되어야 backend가 정상적으로 db에 연결할 수 있다. (실행순서보장은 아님)
+
+  frontend:
+    build: ./frontend
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes: #db 데이터를 컨테이너 삭제 후에도 유지한다. 
+  postgres_data:

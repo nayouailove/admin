@@ -1,0 +1,250 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 24px;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.page {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.appHeader {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.titleGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandLogo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 0;
+  background: #ffffff;
+  object-fit: cover;
+}
+
+.appHeader h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.teacherSummary {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #d8dee9;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #526070;
+  font-size: 14px;
+}
+
+.teacherMessage {
+  margin: 0;
+  font-size: 18px;
+}
+
+.studentCountText {
+  margin: 0;
+  color: #526070;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.form input {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #cbd3df;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.form button,
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form button {
+  padding: 0 16px;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error {
+  margin: 8px 0 16px;
+  padding: 12px;
+  border: 1px solid #f1a8a1;
+  border-radius: 8px;
+  background: #fff1f0;
+  color: #b42318;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+}
+
+.studentRow {
+  display: grid;
+  grid-template-columns: 1fr 40px 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.studentMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.studentMain:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.studentMain span {
+  font-weight: 700;
+}
+
+.studentMain small {
+  color: #526070;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  background: #eef2f7;
+  color: #172033;
+}
+
+.iconButton.danger {
+  background: #fff1f0;
+  color: #b42318;
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.pagination button {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #cbd3df;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172033;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pagination .activePage {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.empty {
+  padding: 32px;
+  border: 1px dashed #cbd3df;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: center;
+  color: #526070;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 0 16px;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .appHeader {
+    grid-template-columns: 48px 1fr 48px;
+  }
+
+  .brandLogo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .appHeader h1 {
+    font-size: 24px;
+  }
+
+  .teacherSummary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form {
+    display: grid;
+  }
+}
