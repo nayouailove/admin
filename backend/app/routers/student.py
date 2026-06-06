@@ -1,42 +1,14 @@
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.config import settings
 from app.database import get_db
+from app.dependencies import require_teacher
 from app.model import TeacherStudent, User
-from app.schema import StudentCreate, StudentResponse, TeacherResponse
+from app.schema import StudentCreate, StudentResponse
 
 
-router = APIRouter()
-#router는 라우터 객체, 라우터는 API의 엔드포인트들을 그룹화하는데 사용된다.
-
-
-# 로그인한 선생님 정보를 가져온다. (현재는 개발용으로 고정된 선생님 정보를 반환한다.)
-def get_current_teacher() -> TeacherResponse:
-    return TeacherResponse(
-        teacher_account_id=settings.dev_teacher_id,
-        display_name=settings.dev_teacher_name,
-    )
-
-
-#GET /me : 로그인한 선생님의 정보를 반환
-@router.get("/me", response_model=TeacherResponse)
-def read_me():
-    return get_current_teacher()
-
-
-#GET /students : 로그인한 선생님이 등록한 학생들의 목록을 반환
-@router.get("/students", response_model=list[StudentResponse])
-def read_students(db: Session = Depends(get_db)):
-    teacher = get_current_teacher()
-
-    return (
-        db.query(TeacherStudent)
-        .filter(TeacherStudent.teacher_account_id == teacher.teacher_account_id)
-        .order_by(TeacherStudent.created_at.desc())
-        .all()
-    )
+router = APIRouter(tags=["students"])
 
 
 def find_student_user(student_data: StudentCreate, db: Session) -> User:
@@ -82,23 +54,38 @@ def find_student_user(student_data: StudentCreate, db: Session) -> User:
     return matched_students[0]
 
 
-#POST /students : 학생 등록
+@router.get("/students", response_model=list[StudentResponse])
+def read_students(
+    current_user: User = Depends(require_teacher),
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(TeacherStudent)
+        .filter(TeacherStudent.teacher_account_id == current_user.account_id)
+        .order_by(TeacherStudent.created_at.desc())
+        .all()
+    )
+
+
 @router.post(
     "/students",
     response_model=StudentResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def create_student(student_data: StudentCreate, db: Session = Depends(get_db)):
-    teacher = get_current_teacher()
+def create_student(
+    student_data: StudentCreate,
+    current_user: User = Depends(require_teacher),
+    db: Session = Depends(get_db),
+):
     student_user = find_student_user(student_data, db)
 
-    student = TeacherStudent(
-        teacher_account_id=teacher.teacher_account_id,
+    teacher_student = TeacherStudent(
+        teacher_account_id=current_user.account_id,
         student_account_id=student_user.account_id,
         student_name=student_user.name,
     )
 
-    db.add(student)
+    db.add(teacher_student)
 
     try:
         db.commit()
@@ -109,28 +96,30 @@ def create_student(student_data: StudentCreate, db: Session = Depends(get_db)):
             detail="이미 등록된 학생 ID입니다.",
         )
 
-    db.refresh(student)
-    return student
+    db.refresh(teacher_student)
+    return teacher_student
 
-# DELETE /students/{student_id} : 학생 삭제
+
 @router.delete("/students/{student_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_student(student_id: int, db: Session = Depends(get_db)):
-    teacher = get_current_teacher()
-
-    student = (
+def delete_student(
+    student_id: int,
+    current_user: User = Depends(require_teacher),
+    db: Session = Depends(get_db),
+):
+    teacher_student = (
         db.query(TeacherStudent)
         .filter(
             TeacherStudent.id == student_id,
-            TeacherStudent.teacher_account_id == teacher.teacher_account_id,
+            TeacherStudent.teacher_account_id == current_user.account_id,
         )
         .first()
     )
 
-    if student is None:
+    if teacher_student is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="학생을 찾을 수 없습니다.",
         )
 
-    db.delete(student)
+    db.delete(teacher_student)
     db.commit()

@@ -1,6 +1,11 @@
 fastapi
-uvicorn[standard]    #fastapi 서버 실행을 위한 패키지
-sqlalchemy             #ORM(Object-Relational Mapping) 라이브러리
-psycopg[binary]        #PostgreSQL용 Python 드라이버
-python-dotenv          #환경 변수 관리를 위한 패키지
-pydantic-settings      #설정 관리를 위한 패키지
+uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+python-dotenv
+pydantic-settings
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
+python-multipart
+alembic

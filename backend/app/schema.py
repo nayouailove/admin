@@ -2,10 +2,46 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, model_validator
 
+class UserResponse(BaseModel):
+    account_id: str
+    name: str
+    role: str
+    is_active: bool
+    created_at: datetime    
+
+    class Config:
+        from_attributes = True
+
+class LoginRequest(BaseModel):
+    account_id: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=1, max_length=100)
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse       
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(min_length=1, max_length=100)
+    new_password: str = Field(min_length=4, max_length=100)
+
+
+class TeacherCreate(BaseModel):
+    teacher_account_id: str = Field(min_length=1, max_length=100)
+    teacher_name: str = Field(min_length=1, max_length=100)
 
 class TeacherResponse(BaseModel):
-    teacher_account_id: str
-    display_name: str
+    id: int
+    account_id: str
+    name: str
+    role: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 class StudentCreate(BaseModel):

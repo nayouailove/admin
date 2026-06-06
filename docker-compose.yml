@@ -11,7 +11,9 @@ services: #실행할 컨테이너 목록
       - "5432:5432"
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     volumes:
@@ -22,7 +24,9 @@ services: #실행할 컨테이너 목록
       - db     #db 컨테이너가 먼저 실행되어야 backend가 정상적으로 db에 연결할 수 있다. (실행순서보장은 아님)
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     volumes:
