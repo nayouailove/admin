@@ -11,47 +11,33 @@ from app.schema import StudentCreate, StudentResponse
 router = APIRouter(tags=["students"])
 
 
-def find_student_user(student_data: StudentCreate, db: Session) -> User:
-    if student_data.student_account_id:
-        student = (
-            db.query(User)
-            .filter(
-                User.account_id == student_data.student_account_id,
-                User.role == "student",
-            )
-            .first()
-        )
-
-        if student is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="해당 학생 ID를 가진 계정을 찾을 수 없습니다.",
-            )
-
-        return student
-
-    matched_students = (
+def get_or_create_student_user(student_data: StudentCreate, db: Session) -> User:
+    existing = (
         db.query(User)
-        .filter(
-            User.name == student_data.student_name,
-            User.role == "student",
-        )
-        .all()
+        .filter(User.account_id == student_data.student_account_id)
+        .first()
     )
 
-    if not matched_students:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="해당 이름을 가진 학생 계정을 찾을 수 없습니다.",
+    if existing is not None:  
+        if existing.role != "student":
+            raise HTTPException(    
+                status_code=status.HTTP_409_CONFLICT,
+                detail="해당 ID는 학생 계정이 아닙니다.",
+            )
+        if existing.name != student_data.student_name:
+            raise HTTPException(
+                 status_code=status.HTTP_409_CONFLICT,
+                 detail="이미 등록되어 있는 ID입니다.",
         )
+        return existing
 
-    if len(matched_students) > 1:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="동명이인이 있어 학생 ID로 등록해주세요.",
-        )
-
-    return matched_students[0]
+    new_user = User(
+        account_id=student_data.student_account_id,
+        name=student_data.student_name,
+        role="student",
+    )
+    db.add(new_user)
+    return new_user
 
 
 @router.get("/students", response_model=list[StudentResponse])
@@ -66,7 +52,6 @@ def read_students(
         .all()
     )
 
-
 @router.post(
     "/students",
     response_model=StudentResponse,
@@ -77,7 +62,7 @@ def create_student(
     current_user: User = Depends(require_teacher),
     db: Session = Depends(get_db),
 ):
-    student_user = find_student_user(student_data, db)
+    student_user = get_or_create_student_user(student_data, db)
 
     teacher_student = TeacherStudent(
         teacher_account_id=current_user.account_id,

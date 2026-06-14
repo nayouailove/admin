@@ -43,25 +43,18 @@ class TeacherResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class StudentCreate(BaseModel):
-    student_account_id: str | None = Field(default=None, max_length=100)
-    student_name: str | None = Field(default=None, max_length=100)
+    student_account_id: str = Field(min_length=1, max_length=100)
+    student_name: str = Field(min_length=1, max_length=100)
 
     @model_validator(mode="after")
-    def require_id_or_name(self):
-        has_account_id = bool(self.student_account_id and self.student_account_id.strip())
-        has_name = bool(self.student_name and self.student_name.strip())
-
-        if not has_account_id and not has_name:
-            raise ValueError("학생 ID 또는 이름 중 하나는 입력해야 합니다.")
-
-        if self.student_account_id:
-            self.student_account_id = self.student_account_id.strip()
-
-        if self.student_name:
-            self.student_name = self.student_name.strip()
-
+    def strip_fields(self):
+        self.student_account_id = self.student_account_id.strip()
+        self.student_name = self.student_name.strip()
+        if not self.student_account_id:
+            raise ValueError("학생 ID를 입력해야 합니다.")
+        if not self.student_name:
+            raise ValueError("학생 이름을 입력해야 합니다.")
         return self
 
 
