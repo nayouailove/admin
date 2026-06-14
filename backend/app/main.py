@@ -4,8 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth import router as auth_router
 from app.company import router as company_router
 from app.config import get_cors_origins
+from app.database import Base, engine
+from app import model  # noqa: F401
 from app.routers.student import router as students_router
 
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="학생 채팅 관리자 API")
 
