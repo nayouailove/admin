@@ -50,8 +50,8 @@ function TeacherAdminView({ user, chatBaseUrl, formatDate, pageSize }) {
     const trimmedAccountId = studentAccountId.trim();
     const trimmedName = studentName.trim();
 
-    if (!trimmedAccountId && !trimmedName) {
-      setErrorMessage("학생 ID 또는 이름 중 하나를 입력해주세요.");
+    if (!trimmedAccountId || !trimmedName) {
+      setErrorMessage("학생 ID와 이름을 모두 입력해주세요.");
       return;
     }
 
@@ -60,8 +60,8 @@ function TeacherAdminView({ user, chatBaseUrl, formatDate, pageSize }) {
 
     try {
       const newStudent = await createStudent({
-        student_account_id: trimmedAccountId || null,
-        student_name: trimmedName || null,
+        student_account_id: trimmedAccountId,
+        student_name: trimmedName,
       });
 
       setStudents((currentStudents) => [newStudent, ...currentStudents]);

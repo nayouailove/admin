@@ -419,15 +419,47 @@ button:disabled {
 
   .appLayout {
     grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+  }
+
+  .contentArea {
+    grid-row: 1;
   }
 
   .sidebar {
+    grid-row: 2;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 16px;
     border-right: 0;
-    border-bottom: 1px solid #dfe5ee;
+    border-bottom: 0;
+    border-top: 1px solid #dfe5ee;
+    gap: 8px;
+  }
+
+  .sidebarBrand {
+    display: none;
   }
 
   .sideNav {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .sideNav button {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .logoutButton {
+    margin-top: 0;
+    min-height: 44px;
+    padding: 0 12px;
+    width: auto;
   }
 }
 
@@ -451,17 +483,34 @@ button:disabled {
     gap: 8px;
   }
 
-  .form,
-  .studentRow,
-  .teacherRow {
+  .form {
     grid-template-columns: 1fr;
   }
 
   .studentRow {
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) 40px 40px;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "main link delete"
+      "date date date";
+    align-items: center;
   }
 
-  .iconButton {
-    width: 100%;
+  .studentRow > *:nth-child(1) { grid-area: main; }
+  .studentRow > *:nth-child(2) { grid-area: date; }
+  .studentRow > *:nth-child(3) { grid-area: link; }
+  .studentRow > *:nth-child(4) { grid-area: delete; }
+
+  .teacherRow {
+    grid-template-columns: minmax(0, 1fr) 46px;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "info delete"
+      "date delete";
+    align-items: center;
   }
+
+  .teacherRow > *:nth-child(1) { grid-area: info; }
+  .teacherRow > *:nth-child(2) { grid-area: date; }
+  .teacherRow > *:nth-child(3) { grid-area: delete; }
 }
