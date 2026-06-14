@@ -11,3 +11,6 @@ build/
 
 docs/
 .vscode/
+
+.env.production
+.venv/
