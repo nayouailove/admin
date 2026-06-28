@@ -1,6 +1,5 @@
 import { ExternalLink, Plus, Search, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import * as XLSX from "xlsx";
 
 import { bulkCreateStudents, createStudent, deleteStudent, fetchStudents } from "../api";
 import { formatDate } from "../utils";
@@ -140,9 +139,11 @@ function TeacherAdminView({ user }) {
     setIsModalOpen(false);
   }
 
-  function handleFileChange(event) {
+  async function handleFileChange(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    const XLSX = await import("xlsx");
     const reader = new FileReader();
 
     reader.onload = (e) => {
