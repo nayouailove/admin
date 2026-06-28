@@ -7,20 +7,6 @@ import CompanyAdminView from "./pages/CompanyAdminView";
 import PasswordChangeView from "./pages/PasswordChangeView";
 import TeacherAdminView from "./pages/TeacherAdminView";
 
-const CHAT_BASE_URL = import.meta.env.VITE_CHAT_BASE_URL;
-const PAGE_SIZE = 7;
-
-function formatDate(dateText) {
-  if (!dateText) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(dateText));
-}
 
 function App() {
   const [user, setUser] = useState(null);
@@ -77,16 +63,12 @@ function App() {
       onLogout={handleLogout}
     >
       {activeTab === "teachers" && user.role === "company_admin" && (
-        <CompanyAdminView formatDate={formatDate} />
+        <CompanyAdminView />
       )}
 
       {activeTab === "students" && user.role === "teacher" && (
         <TeacherAdminView
-          user={user}
-          chatBaseUrl={CHAT_BASE_URL}
-          formatDate={formatDate}
-          pageSize={PAGE_SIZE}
-        />
+          user={user}/>
       )}
 
       {activeTab === "password" && user.role === "teacher" && (

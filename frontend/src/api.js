@@ -31,7 +31,10 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.detail || "요청에 실패했습니다.");
+    const detail = errorData?.detail;
+    throw new Error(
+      typeof detail === "string" ? detail : "요청에 실패했습니다."
+    );
   }
 
   if (response.status === 204) {
@@ -97,4 +100,15 @@ export function deleteStudent(studentId) {
   return request(`/students/${studentId}`, {
     method: "DELETE",
   });
+}
+
+export function bulkCreateStudents(students) {
+  return request("/students/bulk", {
+    method: "POST",
+    body: JSON.stringify({ students }),
+  });
+}
+
+export function resetTeacherPassword(teacherId) {
+  return request(`/company/teachers/${teacherId}/reset-password`, { method: "PATCH" });
 }

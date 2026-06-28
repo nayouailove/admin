@@ -1,9 +1,11 @@
-import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { createTeacher, deleteTeacher, fetchTeachers } from "../api";
+import { formatDate } from "../utils";
+import { RotateCcw, Plus, Trash2 } from "lucide-react"; 
+import { createTeacher, deleteTeacher, fetchTeachers, resetTeacherPassword } from "../api";  // resetTeacherPassword 추가
 
-function CompanyAdminView({ formatDate }) {
+
+function CompanyAdminView() {
   const [teachers, setTeachers] = useState([]);
   const [teacherAccountId, setTeacherAccountId] = useState("");
   const [teacherName, setTeacherName] = useState("");
@@ -63,6 +65,17 @@ function CompanyAdminView({ formatDate }) {
       setErrorMessage(error.message);
     }
   }
+  
+  async function handleResetPassword(teacherId) {
+  setErrorMessage("");
+
+  try {
+    await resetTeacherPassword(teacherId);
+    alert("비밀번호가 0000으로 초기화되었습니다.");
+  } catch (error) {
+    setErrorMessage(error.message);
+  }
+}
 
   return (
     <div className="workspace">
@@ -112,10 +125,17 @@ function CompanyAdminView({ formatDate }) {
             <article className="dataRow teacherRow" key={teacher.account_id}>
               <div>
                 <strong>{teacher.name}</strong>
-                <small>{teacher.account_id}</small>
+                <small>@{teacher.account_id}</small>
               </div>
 
               <span className="dateText">{formatDate(teacher.created_at)}</span>
+              <button
+                className="iconButton"
+               type="button"
+               onClick={() => handleResetPassword(teacher.id)}
+                title="비밀번호 초기화">
+  <RotateCcw size={18} />
+</button>
 
               <button
                 className="iconButton danger"
