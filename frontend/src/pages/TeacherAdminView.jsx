@@ -6,6 +6,7 @@ import { formatDate } from "../utils";
 
 const CHAT_BASE_URL = import.meta.env.VITE_CHAT_BASE_URL;
 const PAGE_SIZE = 7;
+const UNRECOVERABLE_REASONS = ["학생 ID 없음", "이름 없음", "이미 등록된 학생"]; // 포함시켜도 등록이 성공할 수 없는 사유
 
 function TeacherAdminView({ user }) {
   const [students, setStudents] = useState([]);
@@ -26,6 +27,7 @@ function TeacherAdminView({ user }) {
   const [bulkResult, setBulkResult] = useState([]);
   const [modalStep, setModalStep] = useState("upload");
   const [isBulkSubmitting, setIsBulkSubmitting] = useState(false);
+  const [bulkErrorMessage, setBulkErrorMessage] = useState("");
   const fileInputRef = useRef(null);
 
   const filteredStudents = useMemo(() => {
@@ -132,6 +134,7 @@ function TeacherAdminView({ user }) {
     setNameColumn("");
     setPreviewStudents([]);
     setBulkResult([]);
+    setBulkErrorMessage("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -195,9 +198,13 @@ function TeacherAdminView({ user }) {
     setModalStep("preview");
   }
 
-  function toggleExclude(index) { 
+  function toggleExclude(index) {
     setPreviewStudents((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, excluded: !s.excluded } : s))
+      prev.map((s, i) => {
+        if (i !== index) return s;
+        if (UNRECOVERABLE_REASONS.includes(s.reason)) return s;
+        return { ...s, excluded: !s.excluded };
+      })
     );
   } //map : 새 배열을 만드는 방식으로 등록 전 학생 제외
 
@@ -207,6 +214,7 @@ function TeacherAdminView({ user }) {
       .map((s) => ({ student_account_id: s.accountId, student_name: s.name }));
 
     setIsBulkSubmitting(true);
+    setBulkErrorMessage("");
     try {
       const result = await bulkCreateStudents(toSubmit);
 
@@ -235,7 +243,7 @@ function TeacherAdminView({ user }) {
         setStudents((prev) => [...result.created, ...prev]);
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      setBulkErrorMessage(error.message);
     } finally {
       setIsBulkSubmitting(false);
     }
@@ -455,13 +463,23 @@ function TeacherAdminView({ user }) {
                         type="button"
                         className="iconButton"
                         onClick={() => toggleExclude(i)}
-                        title={s.excluded ? "포함" : "제외"}
+                        disabled={UNRECOVERABLE_REASONS.includes(s.reason)}
+                        title={
+                          UNRECOVERABLE_REASONS.includes(s.reason)
+                            ? "포함해도 등록할 수 없음"
+                            : s.excluded ? "포함" : "제외"
+                        }
                       >
                         <X size={14} />
                       </button>
                     </li>
                   ))}
                 </ul>
+                {bulkErrorMessage && (
+                  <div className="error" role="alert">
+                    {bulkErrorMessage}
+                  </div>
+                )}
                 <button type="button" onClick={handleBulkSubmit} disabled={isBulkSubmitting}>
                   학생 등록
                 </button>
