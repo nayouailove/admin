@@ -60,6 +60,21 @@ def create_teacher(
 
     return teacher
 
+@router.patch("/teachers/{teacher_id}/reset-password", response_model=TeacherResponse)
+def reset_teacher_password(
+    teacher_id: int,
+    current_user: User = Depends(require_company_admin),
+    db: Session = Depends(get_db),
+):
+    teacher = db.query(User).filter(User.id == teacher_id, User.role == "teacher").first()
+    if teacher is None:
+        raise HTTPException(status_code=404, detail="선생님을 찾을 수 없습니다.")
+
+    teacher.password_hash = hash_password("0000")
+    db.commit()
+    db.refresh(teacher)
+    return teacher
+
 
 @router.delete("/teachers/{teacher_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_teacher(

@@ -1,0 +1,14 @@
+name: 깃헙 actoins 실행시켜보기
+
+on: #언제
+  push:
+    branches:
+      - main
+      - test-action
+
+jobs:
+  My-Deploy-Job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 성공 출력하기 #워크플로우 이름
+        run: echo "야호"

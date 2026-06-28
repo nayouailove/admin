@@ -66,4 +66,20 @@ class StudentResponse(BaseModel):
 
     class Config:
         from_attributes = True
-        #객체에서 값을 꺼내서 응답 json으로 바굴수 있게 해준다. 
+        #객체에서 값을 꺼내서 응답 json으로 바굴수 있게 해준다.
+
+
+class StudentBulkCreate(BaseModel):
+    students: list[StudentCreate]
+    #StudentCreate : (`student_account_id`, `student_name`)
+
+
+class BulkFailedItem(BaseModel):
+    student_account_id: str
+    student_name: str
+    reason: str
+
+
+class StudentBulkResponse(BaseModel):
+    created: list[StudentResponse]
+    failed: list[BulkFailedItem]
