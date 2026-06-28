@@ -94,34 +94,41 @@ def bulk_create_students(
     created = []
     failed = []
 
-    for student_data in bulk_data.students:  # 한 명씩 순회
+    for student_data in bulk_data.students:  # 한 명씩 순회, 학생별로 savepoint 사용
         try:
-            student_user = get_or_create_student_user(student_data, db)
+            with db.begin_nested():
+                student_user = get_or_create_student_user(student_data, db)
 
-            teacher_student = TeacherStudent(
-                teacher_account_id=current_user.account_id,
-                student_account_id=student_user.account_id,
-                student_name=student_user.name,
-            )
-            db.add(teacher_student)
-            db.commit()
-            db.refresh(teacher_student)
+                teacher_student = TeacherStudent(
+                    teacher_account_id=current_user.account_id,
+                    student_account_id=student_user.account_id,
+                    student_name=student_user.name,
+                )
+                db.add(teacher_student)
+                db.flush()  # 이 학생만 시도해보고, 실패하면 이 학생만 savepoint로 되돌림
             created.append(teacher_student)
 
         except HTTPException as e:
-            db.rollback()
-            if e.status_code == status.HTTP_409_CONFLICT and "이미 등록된" in e.detail:
-                pass
-            else:
-                failed.append(
-                    BulkFailedItem(
-                        student_account_id=student_data.student_account_id,
-                        student_name=student_data.student_name,
-                        reason=e.detail,
-                    )
+            failed.append(
+                BulkFailedItem(
+                    student_account_id=student_data.student_account_id,
+                    student_name=student_data.student_name,
+                    reason=e.detail,
                 )
+            )
         except IntegrityError:
-            db.rollback()
+            failed.append(
+                BulkFailedItem(
+                    student_account_id=student_data.student_account_id,
+                    student_name=student_data.student_name,
+                    reason="등록 중 오류가 발생했습니다.",
+                )
+            )
+
+    db.commit()  # 성공한 학생들을 한 번에 commit
+    for teacher_student in created:
+        db.refresh(teacher_student)
+
     return StudentBulkResponse(created=created, failed=failed)
 
 

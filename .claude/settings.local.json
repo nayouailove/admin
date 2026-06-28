@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(docker compose *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(git diff *)",
+      "Read(//c/Users/youai/AppData/Local/Temp/claude/c--Users-youai-admin/62f2d88e-c905-4ef8-9618-40cd931dcc67/scratchpad/**)"
     ]
   }
 }
