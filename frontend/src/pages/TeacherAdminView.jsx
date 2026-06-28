@@ -222,8 +222,8 @@ function TeacherAdminView({ user }) {
         return {
           accountId: s.student_account_id,
           name: s.student_name,
-          status: r?.status ?? "skipped",
-          reason: r?.reason ?? "",
+          status: r?.status ?? "failed",
+          reason: r?.reason ?? "처리되지 않음",
         };
       });
 
@@ -473,15 +473,11 @@ function TeacherAdminView({ user }) {
                   {bulkResult.map((r, i) => (
                     <li key={i} className={`resultItem result-${r.status}`}>
                       <span className="resultIcon">
-                        {r.status === "success" ? "✓" : r.status === "failed" ? "✗" : "-"}
+                        {r.status === "success" ? "✓" : "✗"}
                       </span>
                       <span className="resultName">{r.name}</span>
                       <span className="resultReason">
-                        {r.status === "success"
-                          ? "등록 완료"
-                          : r.status === "skipped"
-                          ? "이미 등록됨"
-                          : r.reason}
+                        {r.status === "success" ? "등록 완료" : r.reason}
                       </span>
                     </li>
                   ))}
