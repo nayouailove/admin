@@ -415,7 +415,7 @@ function TeacherAdminView({ user }) {
                   onChange={handleFileChange}
                 />
                 <div className="templateHint">
-                  <p>엑셀 파일이 없다면 양식을 받아 입력 후 업로드해주세요.</p>
+                  <p>엑셀 파일이 없거나 업로드가 안되면 양식을 받아 작성 후 업로드해주세요.</p>
                   <a className="linkButton" href="/templates/학생일괄등록양식.xlsx" download>
                     다운로드
                   </a>

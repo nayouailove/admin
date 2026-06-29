@@ -1,4 +1,4 @@
-import { GraduationCap, KeyRound, LogOut, Users } from "lucide-react";
+import { BookOpen, GraduationCap, KeyRound, LogOut, Users } from "lucide-react";
 
 import logo from "../assets/logo.png";
 
@@ -23,6 +23,11 @@ function AppShell({ user, activeTab, onTabChange, onLogout, children }) {
       id: "password",
       label: "비밀번호 변경",
       icon: KeyRound,
+    });
+    tabs.push({
+      id: "guide",
+      label: "사용 가이드",
+      icon: BookOpen,
     });
   }
 

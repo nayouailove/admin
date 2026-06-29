@@ -4,6 +4,7 @@ import { clearToken, fetchMe, getStoredToken } from "./api";
 import AppShell from "./components/AppShell";
 import LoginView from "./components/LoginView";
 import CompanyAdminView from "./pages/CompanyAdminView";
+import GuideView from "./pages/GuideView";
 import PasswordChangeView from "./pages/PasswordChangeView";
 import TeacherAdminView from "./pages/TeacherAdminView";
 
@@ -74,6 +75,8 @@ function App() {
       {activeTab === "password" && user.role === "teacher" && (
         <PasswordChangeView />
       )}
+
+      {activeTab === "guide" && user.role === "teacher" && <GuideView />}
     </AppShell>
   );
 }
